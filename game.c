@@ -143,7 +143,18 @@ void move_frog_forward(void) {
 }
 
 void move_frog_backward(void) {
-	// Unimplemented
+	if (frog_row == 0) {
+		return;
+	}
+	// Redraw the row the frog is currently on (this will remove the frog)
+	redraw_row(frog_row);
+	// Check whether this move will cause the frog to die or not
+	frog_dead = will_frog_die_at_position(frog_row-1, frog_column);
+	
+	// Move the frog position forward and show the frog.
+	// We do this whether the frog is alive or not.
+	frog_row--;
+	redraw_frog();
 }
 
 void move_frog_to_left(void) {
@@ -262,7 +273,7 @@ static uint8_t will_frog_die_at_position(int8_t row, int8_t column) {
 		case 3:
 			lane = row - 1;
 			bit_position = lane_position[lane] + column;
-			if(bit_position > LANE_DATA_WIDTH) {
+			if(bit_position >= LANE_DATA_WIDTH) {
 				bit_position -= LANE_DATA_WIDTH;
 			}
 			return (lane_data[lane] >> bit_position) & 1;
@@ -271,7 +282,7 @@ static uint8_t will_frog_die_at_position(int8_t row, int8_t column) {
 		case 6:
 			channel = row - 5;
 			bit_position = log_position[channel] + column;
-			if(bit_position > LOG_DATA_WIDTH) {
+			if(bit_position >= LOG_DATA_WIDTH) {
 				bit_position -= LOG_DATA_WIDTH;
 			}
 			return !((log_data[channel] >> bit_position) & 1);
