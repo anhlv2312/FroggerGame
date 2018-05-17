@@ -5,6 +5,7 @@
  */ 
 
 #include "game.h"
+#include "score.h"
 #include "ledmatrix.h"
 #include "pixel_colour.h"
 #include <stdint.h>
@@ -130,26 +131,30 @@ void move_frog_forward(void) {
 	
 	// Check whether this move will cause the frog to die or not
 	frog_dead = will_frog_die_at_position(frog_row+1, frog_column);
-	
+
 	// Move the frog position forward and show the frog. 
 	// We do this whether the frog is alive or not. 
 	frog_row++;
 	redraw_frog();
 	
+	if (!frog_dead) {
+		add_to_score(1);
+	}
+
 	// If the frog has ended up successfully in row 7 - add it to the riverbank_status flag
 	if(!frog_dead && frog_row == RIVERBANK_ROW) {
 		riverbank_status |= (1<<frog_column);
+		add_to_score(10);
 	}
 }
 
 void move_frog_backward(void) {
 	// Unimplemented
-	if (frog_row == START_ROW) {
-		return;
-	}
 	redraw_row(frog_row);
 	frog_dead = will_frog_die_at_position(frog_row-1, frog_column);
-	frog_row--;
+	if (frog_row != START_ROW) {
+		frog_row--;
+	}
 	redraw_frog();
 }
 
@@ -159,23 +164,21 @@ void move_frog_to_left(void) {
 	// Redraw the row the frog is currently on (i.e. without the frog), check 
 	// whether the frog will live or not, update the frog position (if the position 
 	// is not the leftmost column) then and redraw the frog.
-	if (frog_column == 0) {
-		return;
-	}
 	redraw_row(frog_row);
 	frog_dead = will_frog_die_at_position(frog_row, frog_column-1);
-	frog_column--;
+	if (frog_column != 0) {
+		frog_column--;
+	}
 	redraw_frog();
 }
 
 void move_frog_to_right(void) {
 	// Unimplemented
-	if (frog_column == 15) {
-		return;
-	}
 	redraw_row(frog_row);
 	frog_dead = will_frog_die_at_position(frog_row, frog_column+1);
-	frog_column++;
+	if (frog_column != 15) {
+		frog_column++;
+	}
 	redraw_frog();
 }
 

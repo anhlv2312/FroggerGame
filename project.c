@@ -30,6 +30,7 @@ void splash_screen(void);
 void new_game(void);
 void play_game(void);
 void handle_game_over(void);
+void update_score(void);
 
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
@@ -97,7 +98,7 @@ void new_game(void) {
 	
 	// Initialise the score
 	init_score();
-	
+	update_score();
 	// Clear a button push or serial input if any are waiting
 	// (The cast to void means the return value is ignored.)
 	(void)button_pushed();
@@ -109,7 +110,7 @@ void play_game(void) {
 	int8_t button;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
-	
+		
 	// Get the current time and remember this as the last time the vehicles
 	// and logs were moved.
 	current_time = get_current_time();
@@ -164,7 +165,7 @@ void play_game(void) {
 				}
 			}
 		}
-		
+					
 		// Process the input. 
 		if(button==3 || escape_sequence_char=='D' || serial_input=='L' || serial_input=='l') {
 			// Attempt to move left
@@ -172,6 +173,7 @@ void play_game(void) {
 		} else if(button==2 || escape_sequence_char=='A' || serial_input=='U' || serial_input=='u') {
 			// Attempt to move forward
 			move_frog_forward();
+			update_score();
 		} else if(button==1 || escape_sequence_char=='B' || serial_input=='D' || serial_input=='d') {
 			// Attempt to move down
 			move_frog_backward();
@@ -181,7 +183,7 @@ void play_game(void) {
 		} else if(serial_input == 'p' || serial_input == 'P') {
 			// Unimplemented feature - pause/unpause the game until 'p' or 'P' is
 			// pressed again
-		} 
+		}
 		// else - invalid input or we're part way through an escape sequence -
 		// do nothing
 		
@@ -210,5 +212,9 @@ void handle_game_over() {
 	while(button_pushed() == NO_BUTTON_PUSHED) {
 		; // wait
 	}
-	
+}
+
+void update_score() {
+	move_cursor(10,12);
+	printf_P(PSTR("Score: %3d"), get_score());
 }
