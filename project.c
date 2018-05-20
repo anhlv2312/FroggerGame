@@ -61,7 +61,7 @@ void initialise_hardware(void) {
 	// Setup serial port for 19200 baud communication with no echo
 	// of incoming characters
 	init_serial_stdio(19200,0);
-	
+
 	init_timer0();
 	DDRA |= (1<<DDRA0) | (1<<DDRA1) | (1<<DDRA2);
 	
@@ -188,13 +188,7 @@ void play_game(void) {
 			// Attempt to move right
 			move_frog_to_right();
 		} else if(serial_input == 'p' || serial_input == 'P') {
-			serial_input = -1;
-			while(1) {
-				serial_input = fgetc(stdin);
-				if(serial_input == 'p' || serial_input == 'P') {
-					break;
-				}
-			}
+			TIMSK0 ^= (1<<OCIE0A);
 			// Unimplemented feature - pause/unpause the game until 'p' or 'P' is
 			// pressed again
 		}
