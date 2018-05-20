@@ -78,7 +78,6 @@ static uint16_t riverbank;
 // then the game/level is complete
 static uint16_t riverbank_status;
 
-
 /////////////////////////////// Function Prototypes for Helper Functions ///////
 // These functions are defined after the public functions. Comments are with the
 // definitions.

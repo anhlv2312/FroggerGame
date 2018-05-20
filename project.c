@@ -23,6 +23,9 @@
 #define F_CPU 8000000L
 #include <util/delay.h>
 
+uint8_t live_led_data[4] = {0b0, 0b1, 0b11, 0b111};
+uint8_t frog_live;
+
 // Function prototypes - these are defined below (after main()) in the order
 // given here
 void initialise_hardware(void);
@@ -31,7 +34,7 @@ void new_game(void);
 void play_game(void);
 void handle_game_over(void);
 void update_score(void);
-
+void update_live(void);
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
 
@@ -60,6 +63,8 @@ void initialise_hardware(void) {
 	init_serial_stdio(19200,0);
 	
 	init_timer0();
+	
+	DDRA |= (1<<DDRA0) | (1<<DDRA1) | (1<<DDRA2);
 	
 	// Turn on global interrupts
 	sei();
@@ -99,6 +104,9 @@ void new_game(void) {
 	// Initialise the score
 	init_score();
 	update_score();
+	
+	frog_live = 3;
+	update_live();
 	// Clear a button push or serial input if any are waiting
 	// (The cast to void means the return value is ignored.)
 	(void)button_pushed();
@@ -199,7 +207,15 @@ void play_game(void) {
 			scroll_river_channel(1, 1);
 			last_move_time = current_time;
 		}
+	
+		if (is_frog_dead() && frog_live) {
+			frog_live--;
+			update_live();
+			put_frog_in_start_position();
+		}
+			
 	}
+	
 	// We get here if the frog is dead or the riverbank is full
 	// The game is over.
 }
@@ -217,4 +233,10 @@ void handle_game_over() {
 void update_score() {
 	move_cursor(10,12);
 	printf_P(PSTR("Score: %3d"), get_score());
+}
+
+void update_live() {
+	move_cursor(10, 13);
+	printf_P(PSTR("Live: %d"), frog_live);
+	PORTA = live_led_data[frog_live];
 }
