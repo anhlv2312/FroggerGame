@@ -63,7 +63,6 @@ void initialise_hardware(void) {
 	init_serial_stdio(19200,0);
 	
 	init_timer0();
-	
 	DDRA |= (1<<DDRA0) | (1<<DDRA1) | (1<<DDRA2);
 	
 	// Turn on global interrupts
@@ -114,15 +113,15 @@ void new_game(void) {
 }
 
 void play_game(void) {
-	uint32_t current_time, last_move_time;
+	uint32_t current_time; //, last_move_time;
 	int8_t button;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
 		
 	// Get the current time and remember this as the last time the vehicles
 	// and logs were moved.
-	current_time = get_current_time();
-	last_move_time = current_time;
+	//current_time = get_current_time();
+	//last_move_time = current_time;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
@@ -189,6 +188,13 @@ void play_game(void) {
 			// Attempt to move right
 			move_frog_to_right();
 		} else if(serial_input == 'p' || serial_input == 'P') {
+			serial_input = -1;
+			while(1) {
+				serial_input = fgetc(stdin);
+				if(serial_input == 'p' || serial_input == 'P') {
+					break;
+				}
+			}
 			// Unimplemented feature - pause/unpause the game until 'p' or 'P' is
 			// pressed again
 		}
