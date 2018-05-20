@@ -196,16 +196,25 @@ void play_game(void) {
 		// do nothing
 		
 		current_time = get_current_time();
-		if(!is_frog_dead() && current_time >= last_move_time + 1000) {
+		if(!is_frog_dead()) {
 			// 1000ms (1 second) has passed since the last time we moved
 			// the vehicles and logs - move them again and keep track of
-			// the time when we did this. 
-			scroll_vehicle_lane(0, 1);
-			scroll_vehicle_lane(1, -1);
-			scroll_vehicle_lane(2, 1);
-			scroll_river_channel(0, -1);
-			scroll_river_channel(1, 1);
-			last_move_time = current_time;
+			// the time when we did this.
+			if (current_time % 1200 == 0) {
+				scroll_vehicle_lane(0, 1);
+			}
+			if (current_time % 1100 == 0) {
+				scroll_vehicle_lane(1, -1);
+			}
+			if (current_time % 1000 == 0) {
+				scroll_vehicle_lane(2, 1);
+			}
+			if (current_time % 900 == 0) {
+				scroll_river_channel(0, -1);
+			}
+			if (current_time % 800 == 0) {
+				scroll_river_channel(1, 1);
+			}
 		}
 	
 		if (is_frog_dead() && frog_live) {
