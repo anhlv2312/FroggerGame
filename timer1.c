@@ -62,7 +62,8 @@ ISR(TIMER1_COMPA_vect) {
 		}
 	}
 	seven_seg_cc = 1 ^ seven_seg_cc;
-
+	PORTA = seven_seg_cc;
+	
 	if(!timed_out) {
 		if(seven_seg_cc == 0) {
 			if (count < 100) {
@@ -70,7 +71,7 @@ ISR(TIMER1_COMPA_vect) {
 			} else {
 				PORTC = seven_seg_data[(count/100)%10];
 			}
-		} else 
+		} else { 
 			if (count < 100) {
 				PORTC = seven_seg_data[0] | 0x80;
 			} else if (count < 1000) {
@@ -79,11 +80,13 @@ ISR(TIMER1_COMPA_vect) {
 				PORTC = seven_seg_data[(count/1000)%10];
 			}
 			
-		}
-		/* Output the digit selection (CC) bit */
-		PORTA = seven_seg_cc;	
+		}	
 	} else {
-		/* No digits displayed -  display is blank */
-		PORTC = 0;
+		if(seven_seg_cc == 0) {
+			PORTC = seven_seg_data[0];
+		} else {
+			PORTC = seven_seg_data[0] | 0x80;
+		}
 	}
+
 }
