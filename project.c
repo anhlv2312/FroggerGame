@@ -163,6 +163,7 @@ void play_game(void) {
 				initialise_game();
 			}
 			put_frog_in_start_position();
+			start_count_down(COUNT_DOWN);
 		}
 		
 		// Check for input - which could be a button push or serial input.
@@ -250,13 +251,27 @@ void play_game(void) {
 				scroll_river_channel(1, 1);
 			}
 		}
+		
+		if (is_timed_out()){
+			frog_live--;
+			update_live();
+			_delay_ms(3000);
+			put_frog_in_start_position();
+			start_count_down(COUNT_DOWN);
+		}
+		
+		if (is_frog_dead()){
+			stop_count_down();
+		}
 			
 		if (is_frog_dead() && frog_live) {
 			frog_live--;
 			update_live();
-			_delay_ms(1000);
+			_delay_ms(3000);
 			put_frog_in_start_position();
+			start_count_down(COUNT_DOWN);
 		}
+		
 
 	}
 	

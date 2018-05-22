@@ -37,9 +37,15 @@ void init_timer1() {
 }
 
 void start_count_down(uint16_t second) {
-	count =(second + 1) * 100;
+	count = (second + 1) * 100;
 	count_down_timing = 1;
 	timed_out = 0;
+}
+
+void stop_count_down() {
+	count = 0;
+	count_down_timing = 0;
+	timed_out = 1;
 }
 
 uint8_t is_timed_out() {
