@@ -64,13 +64,21 @@ ISR(TIMER1_COMPA_vect) {
 	seven_seg_cc = 1 ^ seven_seg_cc;
 
 	if(!timed_out) {
-		/* Display a digit */
 		if(seven_seg_cc == 0) {
-			/* Display rightmost digit - tenths of seconds */
-			PORTC = seven_seg_data[(count/100)%10];
-		} else {
-			/* Display leftmost digit - seconds*/
-			PORTC = seven_seg_data[(count/1000)%10]; // | 0x80;
+			if (count < 100) {
+				PORTC = seven_seg_data[(count/10)%10];
+			} else {
+				PORTC = seven_seg_data[(count/100)%10];
+			}
+		} else 
+			if (count < 100) {
+				PORTC = seven_seg_data[0] | 0x80;
+			} else if (count < 1000) {
+				PORTC = 0;
+			} else {
+				PORTC = seven_seg_data[(count/1000)%10];
+			}
+			
 		}
 		/* Output the digit selection (CC) bit */
 		PORTA = seven_seg_cc;	
