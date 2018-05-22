@@ -1,0 +1,17 @@
+/*
+ * timer1.h
+ *
+ * Created: 23/05/2018 8:38:57 AM
+ *  Author: Andy LE
+ */ 
+
+#ifndef TIMER1_H_
+#define TIMER1_H_
+
+#include <stdint.h>
+
+void init_timer1();
+void start_count_down(uint16_t);
+uint8_t is_timed_out();
+
+#endif
