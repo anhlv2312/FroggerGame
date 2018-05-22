@@ -18,19 +18,16 @@
 #include "terminalio.h"
 #include "score.h"
 #include "timer0.h"
+#include "timer1.h"
 #include "game.h"
 
 #define F_CPU 8000000L
 #include <util/delay.h>
 
 uint8_t live_led_data[4] = {0b0, 0b1, 0b11, 0b111};
-uint8_t seven_seg_data[10] = {63,6,91,79,102,109,125,7,127,111};
 	
 uint8_t frog_live;
 uint8_t game_level;
-uint32_t count_down;
-
-volatile uint8_t seven_seg_cc = 0;
 
 // Function prototypes - these are defined below (after main()) in the order
 // given here
@@ -43,7 +40,7 @@ void update_score(void);
 void update_live(void);
 void update_level(void);
 void next_level(void);
-void update_count_down(uint32_t);
+
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
 #define MAX_LIVE 3
@@ -76,6 +73,7 @@ void initialise_hardware(void) {
 	init_serial_stdio(19200,0);
 
 	init_timer0();
+	init_timer1();
 	
 	// Set 3 pins of port D to be the out put for lives
 	DDRD |= (1<<DDRD2) | (1<<DDRD3) | (1<<DDRD4);
@@ -137,22 +135,21 @@ void new_game(void) {
 }
 
 void play_game(void) {
-	uint32_t current_time, start_time;
-	// , last_move_time;
+	uint32_t current_time;
 	int8_t button;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
 		
 	// Get the current time and remember this as the last time the vehicles
 	// and logs were moved.
-	current_time = get_current_time();
-	start_time = current_time;
+	//current_time = get_current_time();
 	//last_move_time = current_time;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
+	start_count_down(COUNT_DOWN);
+	
 	while(!is_frog_dead()) {
-		current_time = get_current_time();
 		
 		if(frog_has_reached_riverbank()) {
 			// Frog reached the other side successfully but the
@@ -166,7 +163,6 @@ void play_game(void) {
 				initialise_game();
 			}
 			put_frog_in_start_position();
-			start_time = current_time;
 		}
 		
 		// Check for input - which could be a button push or serial input.
@@ -233,6 +229,7 @@ void play_game(void) {
 		// else - invalid input or we're part way through an escape sequence -
 		// do nothing
 		
+		current_time = get_current_time();
 		if(!is_frog_dead()) {
 			// 1000ms (1 second) has passed since the last time we moved
 			// the vehicles and logs - move them again and keep track of
@@ -254,28 +251,11 @@ void play_game(void) {
 			}
 		}
 			
-		if (current_time > start_time + COUNT_DOWN*1000 && frog_live) {
-			update_count_down(0);
-			TIMSK0 ^= (1<<OCIE0A);
-			frog_live--;
-			update_live();
-			_delay_ms(3000);
-			put_frog_in_start_position();
-			start_time = current_time;	
-			TIMSK0 ^= (1<<OCIE0A);
-		} else {
-			update_count_down(current_time - start_time);
-		}
-			
 		if (is_frog_dead() && frog_live) {
-			update_count_down(0);
-			TIMSK0 ^= (1<<OCIE0A);
 			frog_live--;
 			update_live();
-			_delay_ms(3000);
+			_delay_ms(1000);
 			put_frog_in_start_position();
-			start_time = current_time;
-			TIMSK0 ^= (1<<OCIE0A);
 		}
 
 	}
@@ -317,39 +297,4 @@ void update_level() {
 void next_level() {
 	game_level++;
 	update_level();
-}
-
-void update_count_down(uint32_t play_time) {
-	uint32_t time_left;
-	time_left = (COUNT_DOWN+1)*1000 - play_time;
-
-	/* Display a digit */
-	seven_seg_cc = ~seven_seg_cc;
-	if (time_left >= 10000 && time_left < (COUNT_DOWN+1) * 1000) {
-		if(seven_seg_cc == 0) {
-			PORTC = seven_seg_data[(time_left/1000)%10];
-		} else {
-			PORTC = seven_seg_data[(time_left/10000)%10] & ~(0x80);
-		}
-	} else if ( time_left >= 1000 && time_left < 10000) {
-		if(seven_seg_cc == 0) {
-			PORTC = seven_seg_data[(time_left/1000)%10];
-		} else {
-			PORTC = 0x00;
-		}
-	} else if ( time_left > 0 && time_left < 1000) {
-		if(seven_seg_cc == 0) {
-			PORTC = seven_seg_data[(time_left/100)%10];
-		} else {
-			PORTC = seven_seg_data[(time_left/1000)%10] | 0x80;
-		}		
-	} else {
-		PORTC = 0x00;
-	}
-	
-	if(seven_seg_cc == 0) {
-		PORTD &= ~(1<<5);
-	} else {
-		PORTD |= (1<<5);
-	}
 }
