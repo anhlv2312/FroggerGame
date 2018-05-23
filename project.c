@@ -153,6 +153,7 @@ void play_game(void) {
 	
 	press_time = 0;
 	hold_time = 0;
+	holding_button = 0;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
