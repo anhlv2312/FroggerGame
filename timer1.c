@@ -8,13 +8,14 @@
 volatile uint8_t count_down_timing = 0;
 volatile uint8_t timed_out = 1;
 volatile uint16_t count = 0;
-volatile uint8_t seven_seg_cc = 0;
+
+#define SEVEN_SEG_CC ((PIND & (1<<7)) >> 7)
 
 uint8_t seven_seg_data[10] = {63,6,91,79,102,109,125,7,127,111};
 
 void init_timer1() {
 	DDRC = 0xFF;
-	DDRA = 0x01;
+	DDRD |= (1<<7);
 
 	/* Set up timer/counter 1 so that we get an 
 	** interrupt 100 times per second, i.e. every
@@ -61,11 +62,12 @@ ISR(TIMER1_COMPA_vect) {
 			timed_out = 1;
 		}
 	}
-	seven_seg_cc = 1 ^ seven_seg_cc;
-	PORTA = seven_seg_cc;
+
+	// Flip the PortD's 7th Pin
+	PORTD ^= (1<<7);
 	
 	if(!timed_out) {
-		if(seven_seg_cc == 0) {
+		if(SEVEN_SEG_CC == 0) {
 			if (count < 100) {
 				PORTC = seven_seg_data[(count/10)%10];
 			} else {
@@ -79,10 +81,9 @@ ISR(TIMER1_COMPA_vect) {
 			} else {
 				PORTC = seven_seg_data[(count/1000)%10];
 			}
-			
 		}	
 	} else {
-		if(seven_seg_cc == 0) {
+		if(SEVEN_SEG_CC == 0) {
 			PORTC = seven_seg_data[0];
 		} else {
 			PORTC = seven_seg_data[0] | 0x80;
