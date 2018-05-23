@@ -143,7 +143,7 @@ void new_game(void) {
 void play_game(void) {
 	uint32_t current_time;
 	uint32_t button_press_time, joystick_press_time, hold_time;
-	uint8_t holding_button, holding_joystick;
+	uint8_t holding_button, holding_x, holding_y;
 	int8_t button;
 	int8_t paused;
 	int8_t joystick_x, joystick_y;
@@ -159,7 +159,8 @@ void play_game(void) {
 	button_press_time = 0;
 	hold_time = 0;
 	holding_button = 0;
-	holding_joystick =0;
+	holding_x =0;
+	holding_y =0;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
@@ -283,23 +284,28 @@ void play_game(void) {
 		if (joystick_x || joystick_y) {
 			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
 			hold_time = current_time - joystick_press_time;
-			if ((!holding_joystick) || (hold_time > 500 && hold_time %100 ==0)){
+			if ((holding_x == 0) || (hold_time > 500 && hold_time %100 ==0)){
 				if (joystick_x == 1) {
 					move_frog_forward();
+					holding_x =1;
 				} else if (joystick_x == -1) {
 					move_frog_backward();
-				}
-			
-				if (joystick_y == 1) {
-					move_frog_to_right();
-					} else if (joystick_y == -1) {
-					move_frog_to_left();
+					holding_x =1;
 				}
 			}
-			holding_joystick = 1;
+			if ((holding_y == 0) || (hold_time > 500 && hold_time %100 ==0)){
+				if (joystick_y == 1) {
+					move_frog_to_right();
+					holding_y = 1;
+				} else if (joystick_y == -1) {
+					move_frog_to_left();
+					holding_y = 1;
+				}
+			}
 		} else {
 			joystick_press_time = 0;
-			holding_joystick = 0;
+			holding_x = 0;
+			holding_y =0;
 		}
 
 		
@@ -331,7 +337,7 @@ void play_game(void) {
 		if (is_frog_dead()){
 			stop_count_down();
 			PCICR &= ~(1<<PCIE1);
-			_delay_ms(3000);
+			_delay_ms(2000);
 			PCICR |= (1<<PCIE1);
 			sei();
 			if (frog_live){
