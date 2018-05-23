@@ -157,6 +157,7 @@ void play_game(void) {
 	
 	paused = 0;
 	button_press_time = 0;
+	joystick_press_time =0;
 	hold_time = 0;
 	holding_button = 0;
 	holding_x =0;
@@ -284,7 +285,7 @@ void play_game(void) {
 		if (joystick_x || joystick_y) {
 			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
 			hold_time = current_time - joystick_press_time;
-			if ((holding_x == 0) || (hold_time > 500 && hold_time %100 ==0)){
+			if ((holding_x == 0) || (hold_time > 500 && hold_time %200 ==0)){
 				if (joystick_x == 1) {
 					move_frog_forward();
 					holding_x =1;
@@ -293,7 +294,7 @@ void play_game(void) {
 					holding_x =1;
 				}
 			}
-			if ((holding_y == 0) || (hold_time > 500 && hold_time %100 ==0)){
+			if ((holding_y == 0) || (hold_time > 500 && hold_time %200 ==0)){
 				if (joystick_y == 1) {
 					move_frog_to_right();
 					holding_y = 1;
@@ -335,7 +336,7 @@ void play_game(void) {
 		}
 	
 		if (is_frog_dead()){
-			stop_count_down();
+			pause_count_down(1);
 			PCICR &= ~(1<<PCIE1);
 			_delay_ms(2000);
 			PCICR |= (1<<PCIE1);

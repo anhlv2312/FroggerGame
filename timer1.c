@@ -6,7 +6,7 @@
 #include "timer1.h"
 
 volatile uint8_t count_down_timing = 0;
-volatile uint8_t timed_out = 1;
+volatile uint8_t timed_out = 0;
 volatile uint16_t count = 0;
 
 #define SEVEN_SEG_CC ((PIND & (1<<7)) >> 7)
