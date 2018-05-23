@@ -68,6 +68,7 @@ uint8_t frog_has_reached_riverbank(void);
 
 // Check whether the frog is alive or dead
 uint8_t is_frog_dead(void);
+void set_frog_dead(void);
 
 /////////////////////// UPDATE FUNCTIONS /////////////////////////////////////
 // Scroll the given lane of traffic in the given direction. 

@@ -44,7 +44,7 @@ void next_level(void);
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
 #define MAX_LIVE 3
-#define COUNT_DOWN 15 //sec
+#define COUNT_DOWN 3 //sec
 #define SPEED_STEP 50
 
 
@@ -251,28 +251,21 @@ void play_game(void) {
 				scroll_river_channel(1, 1);
 			}
 		}
-		
+
 		if (is_timed_out()){
-			frog_live--;
-			update_live();
-			_delay_ms(3000);
-			put_frog_in_start_position();
-			start_count_down(COUNT_DOWN);
+			set_frog_dead();
 		}
-		
+	
 		if (is_frog_dead()){
 			stop_count_down();
-		}
-			
-		if (is_frog_dead() && frog_live) {
-			frog_live--;
-			update_live();
 			_delay_ms(3000);
-			put_frog_in_start_position();
-			start_count_down(COUNT_DOWN);
+			if (frog_live){
+				frog_live--;
+				update_live();
+				put_frog_in_start_position();
+				start_count_down(COUNT_DOWN);
+			}
 		}
-		
-
 	}
 	
 	if (is_riverbank_full()) {
