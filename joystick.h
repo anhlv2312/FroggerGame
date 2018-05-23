@@ -12,7 +12,8 @@
 #define NO_JOYSTICK_MOVED (-1)
 
 void init_joystick (void);
-uint8_t joystick_moved(void);
+int8_t get_x(void);
+int8_t get_y(void);
 
 
 #endif /* JOYSTICK_H_ */

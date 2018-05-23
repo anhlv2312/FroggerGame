@@ -142,11 +142,11 @@ void new_game(void) {
 
 void play_game(void) {
 	uint32_t current_time;
-	uint32_t press_time, hold_time;
+	uint32_t button_press_time, joystick_press_time, hold_time;
 	uint8_t holding_button, holding_joystick;
 	int8_t button;
 	int8_t paused;
-	int8_t joystick;
+	int8_t joystick_x, joystick_y;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
 		
@@ -156,10 +156,10 @@ void play_game(void) {
 	//last_move_time = current_time;
 	
 	paused = 0;
-	press_time = 0;
+	button_press_time = 0;
 	hold_time = 0;
 	holding_button = 0;
-	holding_joystick = 0;
+	holding_joystick =0;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
@@ -193,14 +193,9 @@ void play_game(void) {
 		serial_input = -1;
 		escape_sequence_char = -1;
 		button = button_pushed();
-		joystick = joystick_moved();
-		
-		if (joystick != NO_JOYSTICK_MOVED) {
+		joystick_x =0;
+		joystick_y = 0;
 
-				move_cursor(10, 18);
-				printf_P(PSTR("Joystick: %2d"), joystick);
-
-		}
 		
 		if(button == NO_BUTTON_PUSHED) {
 			// No push button was pushed, see if there is any serial input
@@ -260,9 +255,9 @@ void play_game(void) {
 		
 		if (BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) {
 			PCICR &= ~(1<<PCIE1);
-			if (press_time == 0) {press_time = get_current_time();}
-			hold_time = current_time - press_time;
-			if (hold_time > 500 && hold_time % 100 ==0 ) {
+			if (button_press_time == 0) {button_press_time = get_current_time();}
+			hold_time = current_time - button_press_time;
+			if (hold_time > 500 && hold_time % 200 ==0 ) {
 				if (BUTTON_LEFT && (holding_button == 0 || holding_button == 1)) {
 					move_frog_to_left();
 					holding_button = 1;
@@ -278,22 +273,35 @@ void play_game(void) {
 				}
 			}
 		} else {
-			press_time = 0;
+			button_press_time = 0;
 			holding_button = 0;
 			PCICR |= (1<<PCIE1);
 		}
+		joystick_x = get_x();
+		joystick_y = get_y();
 		
-		if (joystick != NO_JOYSTICK_MOVED) {
-			if (press_time == 0) {press_time = get_current_time();}
-			hold_time = current_time - press_time;
-			if (hold_time > 500 && hold_time % 100 ==0 ) {
-				move_frog_to_left();
+		if (joystick_x || joystick_y) {
+			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
+			hold_time = current_time - joystick_press_time;
+			if ((!holding_joystick) || (hold_time > 500 && hold_time %100 ==0)){
+				if (joystick_x == 1) {
+					move_frog_forward();
+				} else if (joystick_x == -1) {
+					move_frog_backward();
+				}
+			
+				if (joystick_y == 1) {
+					move_frog_to_right();
+					} else if (joystick_y == -1) {
+					move_frog_to_left();
+				}
 			}
 			holding_joystick = 1;
 		} else {
-			press_time = 0;
-			holding_joystick = 0;	
+			joystick_press_time = 0;
+			holding_joystick = 0;
 		}
+
 		
 		if(!is_frog_dead() && !paused) {
 			// 1000ms (1 second) has passed since the last time we moved
