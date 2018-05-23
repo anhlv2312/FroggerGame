@@ -29,12 +29,6 @@ static uint64_t lane_data[3] = {
 		0b0011100000111000011100000111000011100001110001110000111000011100,
 		0b0000111100001111000011110000111100001111000001111100001111000111
 };
-
-static uint64_t lane_data_test[3] = {
-	0b00000000000000000000000000000000000000000000000000000000000000000,
-	0b00000000000000000000000000000000000000000000000000000000000000000,
-	0b00000000000000000000000000000000000000000000000000000000000000000
-};
 		
 // Log data - 32 bits for each log channel which we loop continuously.
 // A 1 indicates the presence of a log, 0 is empty.
@@ -44,10 +38,6 @@ static uint64_t lane_data_test[3] = {
 static uint32_t log_data[2] = {
 		0b11110001100111000111100011111000,
 		0b11100110111101100001110110011100
-};
-static uint32_t log_data_test[2] = {
-	0b11111111111111111111111111111111,
-	0b11111111111111111111111111111111
 };
 
 // Lane positions. The bit position (0 to 63) of the lane_data above that is
@@ -81,7 +71,8 @@ PixelColour vehicle_colours[3] = { COLOUR_RED, COLOUR_YELLOW, COLOUR_RED }; // b
 
 // River bank pattern. Note that the least significant bit in this
 // pattern (RHS) corresponds to column 0 on the display (LHS).
-#define RIVERBANK 0b1101110111011101
+//#define RIVERBANK 0b1101110111011101
+#define RIVERBANK 0b1110111111111111
 static uint16_t riverbank;
 // riverbank_status is a bit pattern similar to riverbank but will
 // only have zeroes where there are unoccupied holes. When this is all 1's

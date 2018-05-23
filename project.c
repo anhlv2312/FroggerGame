@@ -385,6 +385,11 @@ void update_level() {
 }
 
 void next_level() {
+	for (uint8_t i=0; i<16; i++) {
+		ledmatrix_shift_display_left();
+		_delay_ms(75);
+	}
+	_delay_ms(500);
 	game_level++;
 	update_level();
 }
