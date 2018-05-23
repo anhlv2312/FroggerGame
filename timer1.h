@@ -12,6 +12,7 @@
 
 void init_timer1();
 void start_count_down(uint16_t);
+void pause_count_down(uint8_t);
 void stop_count_down();
 uint8_t is_timed_out();
 

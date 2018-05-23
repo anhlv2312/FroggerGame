@@ -143,6 +143,12 @@
     <Compile Include="buttons.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="joystick.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="joystick.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="timer1.c">
       <SubType>compile</SubType>
     </Compile>

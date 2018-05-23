@@ -43,6 +43,10 @@ void start_count_down(uint16_t second) {
 	timed_out = 0;
 }
 
+void pause_count_down(uint8_t paused) {
+	count_down_timing = 1 ^ paused;
+}
+
 void stop_count_down() {
 	count = 0;
 	count_down_timing = 0;

@@ -19,6 +19,7 @@
 #include "score.h"
 #include "timer0.h"
 #include "timer1.h"
+#include "joystick.h"
 #include "game.h"
 
 #define F_CPU 8000000L
@@ -78,6 +79,7 @@ void initialise_hardware(void) {
 
 	init_timer0();
 	init_timer1();
+	init_joystick();
 	
 	// Set 3 pins of port D to be the out put for lives
 	DDRD |= (1<<DDRD2) | (1<<DDRD3) | (1<<DDRD4);
@@ -143,6 +145,8 @@ void play_game(void) {
 	uint32_t press_time, hold_time;
 	uint8_t holding_button;
 	int8_t button;
+	int8_t paused;
+	int8_t joystick;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
 		
@@ -151,6 +155,7 @@ void play_game(void) {
 	//current_time = get_current_time();
 	//last_move_time = current_time;
 	
+	paused = 0;
 	press_time = 0;
 	hold_time = 0;
 	holding_button = 0;
@@ -187,7 +192,14 @@ void play_game(void) {
 		serial_input = -1;
 		escape_sequence_char = -1;
 		button = button_pushed();
+		joystick = joystick_moved();
+		
+		if (joystick != NO_JOYSTICK_MOVED) {
 
+				move_cursor(10, 18);
+				printf_P(PSTR("Joystick: %2d"), joystick);
+
+		}
 		
 		if(button == NO_BUTTON_PUSHED) {
 			// No push button was pushed, see if there is any serial input
@@ -219,21 +231,24 @@ void play_game(void) {
 		}
 					
 		// Process the input. 
-		if(button==3 || escape_sequence_char=='D' || serial_input=='L' || serial_input=='l') {
+		if( button==3 || escape_sequence_char=='D' || serial_input=='L' || serial_input=='l') {
 			// Attempt to move left
-			move_frog_to_left();
+			if (!paused) {move_frog_to_left();}
 		} else if(button==2 || escape_sequence_char=='A' || serial_input=='U' || serial_input=='u') {
 			// Attempt to move forward
-			move_frog_forward();
-			update_score();
+			if (!paused) {
+				move_frog_forward();
+				update_score();
+				}
 		} else if(button==1 || escape_sequence_char=='B' || serial_input=='D' || serial_input=='d') {
 			// Attempt to move down
-			move_frog_backward();
+			if (!paused) {move_frog_backward();}
 		} else if(button==0 || escape_sequence_char=='C' || serial_input=='R' || serial_input=='r') {
 			// Attempt to move right
-			move_frog_to_right();
+			if (!paused) {move_frog_to_right();}
 		} else if(serial_input == 'p' || serial_input == 'P') {
-			TIMSK0 ^= (1<<OCIE0A);
+			paused = 1 ^ paused;
+			pause_count_down(paused);
 			// Unimplemented feature - pause/unpause the game until 'p' or 'P' is
 			// pressed again
 		}
@@ -242,11 +257,11 @@ void play_game(void) {
 		
 		current_time = get_current_time();
 		
-		if (BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) {
+		if ((BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) && !paused) {
 			PCICR &= ~(1<<PCIE1);
 			if (press_time == 0) {press_time = get_current_time();}
 			hold_time = current_time - press_time;
-			if (hold_time > 500 && hold_time % 200 ==0 ) {
+			if (hold_time > 500 && hold_time % 100 ==0 ) {
 				if (BUTTON_LEFT && (holding_button == 0 || holding_button == 1)) {
 					move_frog_to_left();
 					holding_button = 1;
@@ -267,7 +282,7 @@ void play_game(void) {
 			PCICR |= (1<<PCIE1);
 		}
 		
-		if(!is_frog_dead()) {
+		if(!is_frog_dead() && !paused) {
 			// 1000ms (1 second) has passed since the last time we moved
 			// the vehicles and logs - move them again and keep track of
 			// the time when we did this.
@@ -294,8 +309,9 @@ void play_game(void) {
 	
 		if (is_frog_dead()){
 			stop_count_down();
-			cli();
+			PCICR &= ~(1<<PCIE1);
 			_delay_ms(3000);
+			PCICR |= (1<<PCIE1);
 			sei();
 			if (frog_live){
 				frog_live--;
@@ -331,7 +347,7 @@ void update_score() {
 void update_live() {
 	move_cursor(30, 12);
 	printf_P(PSTR("Live: %2d"), frog_live);
-	PORTD &= ~(111<<2);
+	PORTD &= ~(0b11100);
 	PORTD |= (live_led_data[frog_live]<<2);
 }
 
