@@ -143,7 +143,7 @@ void new_game(void) {
 void play_game(void) {
 	uint32_t current_time;
 	uint32_t press_time, hold_time;
-	uint8_t holding_button;
+	uint8_t holding_button, holding_joystick;
 	int8_t button;
 	int8_t paused;
 	int8_t joystick;
@@ -159,6 +159,7 @@ void play_game(void) {
 	press_time = 0;
 	hold_time = 0;
 	holding_button = 0;
+	holding_joystick = 0;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
@@ -257,7 +258,7 @@ void play_game(void) {
 		
 		current_time = get_current_time();
 		
-		if ((BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) && !paused) {
+		if (BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) {
 			PCICR &= ~(1<<PCIE1);
 			if (press_time == 0) {press_time = get_current_time();}
 			hold_time = current_time - press_time;
@@ -280,6 +281,18 @@ void play_game(void) {
 			press_time = 0;
 			holding_button = 0;
 			PCICR |= (1<<PCIE1);
+		}
+		
+		if (joystick != NO_JOYSTICK_MOVED) {
+			if (press_time == 0) {press_time = get_current_time();}
+			hold_time = current_time - press_time;
+			if (hold_time > 500 && hold_time % 100 ==0 ) {
+				move_frog_to_left();
+			}
+			holding_joystick = 1;
+		} else {
+			press_time = 0;
+			holding_joystick = 0;	
 		}
 		
 		if(!is_frog_dead() && !paused) {
