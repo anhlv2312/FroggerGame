@@ -72,7 +72,17 @@ PixelColour vehicle_colours[3] = { COLOUR_RED, COLOUR_YELLOW, COLOUR_RED }; // b
 // River bank pattern. Note that the least significant bit in this
 // pattern (RHS) corresponds to column 0 on the display (LHS).
 //#define RIVERBANK 0b1101110111011101
-#define RIVERBANK 0b1110111111111111
+//#define RIVERBANK 0b1110111111111111
+
+static uint16_t river_bank_data[8] = {
+	0b1111110111111111,
+	0b1110111111011111,
+	0b1111101110110111,
+	0b1101110111101011,
+	0b1010111101110101,
+	0b0110110101010101,
+	0b1010101010101010,
+};
 static uint16_t riverbank;
 // riverbank_status is a bit pattern similar to riverbank but will
 // only have zeroes where there are unoccupied holes. When this is all 1's
@@ -101,8 +111,8 @@ void initialise_game(void) {
 	log_position[0] = log_position[1] = 0;
 	
 	// Initial riverbank pattern
-	riverbank = RIVERBANK;
-	riverbank_status = RIVERBANK;
+	riverbank = river_bank_data[0];
+	riverbank_status = river_bank_data[0];
 	
 	redraw_whole_display();
 	
@@ -443,4 +453,10 @@ static void redraw_frog(void) {
 	} else {
 		ledmatrix_update_pixel(frog_column, frog_row, COLOUR_FROG);
 	}
+}
+void next_level(uint8_t level) {
+	riverbank = river_bank_data[level % 8];
+	riverbank_status = river_bank_data[level % 8];
+	lane_position[0] = lane_position[1] = lane_position[2] = level * 7;
+	log_position[0] = log_position[1] = level * 7;
 }

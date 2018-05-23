@@ -40,13 +40,12 @@ void handle_game_over(void);
 void update_score(void);
 void update_live(void);
 void update_level(void);
-void next_level(void);
 
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
 #define MAX_LIVE 3
 #define COUNT_DOWN 20 //sec
-#define SPEED_STEP 50
+#define SPEED_STEP 100
 #define BUTTON_UP ((PINB & (1<<2)) >> 2)
 #define BUTTON_DOWN ((PINB & (1<<1)) >> 1)
 #define BUTTON_LEFT ((PINB & (1<<3)) >> 3) 
@@ -173,12 +172,18 @@ void play_game(void) {
 			// Frog reached the other side successfully but the
 			// riverbank isn't full, put a new frog at the start;
 			if (is_riverbank_full()) {
-				next_level();
+				for (uint8_t i=0; i<16; i++) {
+					ledmatrix_shift_display_left();
+					_delay_ms(75);
+				}
+				_delay_ms(500);
 				if (frog_live < MAX_LIVE) {
 					frog_live++;
 					update_live();
 				}
-				initialise_game();
+				next_level(game_level);
+				game_level++;
+				update_level();
 			}
 			put_frog_in_start_position();
 			start_count_down(COUNT_DOWN);
@@ -314,19 +319,19 @@ void play_game(void) {
 			// 1000ms (1 second) has passed since the last time we moved
 			// the vehicles and logs - move them again and keep track of
 			// the time when we did this.
-			if (current_time % (1300 - game_level * SPEED_STEP) == 0) {
+			if (current_time % (1100 - game_level * SPEED_STEP) == 0) {
 				scroll_vehicle_lane(0, 1);
 			}
-			if (current_time % (1200 - game_level * SPEED_STEP) == 0) {
+			if (current_time % (1000 - game_level * SPEED_STEP) == 0) {
 				scroll_vehicle_lane(1, -1);
 			}
-			if (current_time % (1100 - game_level * SPEED_STEP) == 0) {
+			if (current_time % (900 - game_level * SPEED_STEP) == 0) {
 				scroll_vehicle_lane(2, 1);
 			}
-			if (current_time % (1000 - game_level * SPEED_STEP) == 0) {
+			if (current_time % (1300 - game_level * SPEED_STEP) == 0) {
 				scroll_river_channel(0, -1);
 			}
-			if (current_time % (900 - game_level * SPEED_STEP) == 0) {
+			if (current_time % (1200 - game_level * SPEED_STEP) == 0) {
 				scroll_river_channel(1, 1);
 			}
 		}
@@ -350,9 +355,6 @@ void play_game(void) {
 		}
 	}
 	
-	if (is_riverbank_full()) {
-		next_level();
-	}
 	// We get here if the frog is dead or the riverbank is full
 	// The game is over.
 }
@@ -382,14 +384,4 @@ void update_live() {
 void update_level() {
 	move_cursor(50, 12);
 	printf_P(PSTR("Level: %2d"), game_level);
-}
-
-void next_level() {
-	for (uint8_t i=0; i<16; i++) {
-		ledmatrix_shift_display_left();
-		_delay_ms(75);
-	}
-	_delay_ms(500);
-	game_level++;
-	update_level();
 }

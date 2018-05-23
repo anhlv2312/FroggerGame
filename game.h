@@ -84,5 +84,5 @@ void scroll_vehicle_lane(uint8_t lane, int8_t direction);
 // log argument is 0 or 1 (corresponding to rows 5 and 6 on the display).
 // direction argument is -1 for left, 1 for right, 0 for no scroll (just redraw)
 void scroll_river_channel (uint8_t channel, int8_t direction);
-
+void next_level(uint8_t);
 #endif /* GAME_H_ */
