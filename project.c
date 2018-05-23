@@ -44,8 +44,12 @@ void next_level(void);
 // ASCII code for Escape character
 #define ESCAPE_CHAR 27
 #define MAX_LIVE 3
-#define COUNT_DOWN 3 //sec
+#define COUNT_DOWN 20 //sec
 #define SPEED_STEP 50
+#define BUTTON_UP ((PINB & (1<<2)) >> 2)
+#define BUTTON_DOWN ((PINB & (1<<1)) >> 1)
+#define BUTTON_LEFT ((PINB & (1<<3)) >> 3) 
+#define BUTTON_RIGHT ((PINB & (1<<0)) >> 0) 
 
 
 /////////////////////////////// main //////////////////////////////////
@@ -136,6 +140,8 @@ void new_game(void) {
 
 void play_game(void) {
 	uint32_t current_time;
+	uint32_t press_time, hold_time;
+	uint8_t holding_button;
 	int8_t button;
 	char serial_input, escape_sequence_char;
 	uint8_t characters_into_escape_sequence = 0;
@@ -144,6 +150,9 @@ void play_game(void) {
 	// and logs were moved.
 	//current_time = get_current_time();
 	//last_move_time = current_time;
+	
+	press_time = 0;
+	hold_time = 0;
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
@@ -231,6 +240,32 @@ void play_game(void) {
 		// do nothing
 		
 		current_time = get_current_time();
+		
+		if (BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) {
+			PCICR &= ~(1<<PCIE1);
+			if (press_time == 0) {press_time = get_current_time();}
+			hold_time = current_time - press_time;
+			if (hold_time > 500 && hold_time % 200 ==0 ) {
+				if (BUTTON_LEFT && (holding_button == 0 || holding_button == 1)) {
+					move_frog_to_left();
+					holding_button = 1;
+				} else if (BUTTON_RIGHT && (holding_button == 0 || holding_button == 2)) {
+					move_frog_to_right();
+					holding_button = 2;
+				} else if (BUTTON_UP && (holding_button == 0 || holding_button == 3)) {
+					move_frog_forward();
+					holding_button = 3;
+				} else if (BUTTON_DOWN && (holding_button == 0 || holding_button == 4)) {
+					move_frog_backward();
+					holding_button = 4;
+				}
+			}
+		} else {
+			press_time = 0;
+			holding_button = 0;
+			PCICR |= (1<<PCIE1);
+		}
+		
 		if(!is_frog_dead()) {
 			// 1000ms (1 second) has passed since the last time we moved
 			// the vehicles and logs - move them again and keep track of
@@ -258,7 +293,9 @@ void play_game(void) {
 	
 		if (is_frog_dead()){
 			stop_count_down();
+			cli();
 			_delay_ms(3000);
+			sei();
 			if (frog_live){
 				frog_live--;
 				update_live();

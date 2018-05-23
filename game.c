@@ -129,6 +129,8 @@ void put_frog_in_start_position(void) {
 	frog_dead = 0;
 	
 	// Show the frog
+	//redraw_frog();
+	redraw_whole_display();
 	redraw_frog();
 }
 
