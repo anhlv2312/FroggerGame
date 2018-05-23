@@ -172,6 +172,7 @@ void play_game(void) {
 			// Frog reached the other side successfully but the
 			// riverbank isn't full, put a new frog at the start;
 			if (is_riverbank_full()) {
+				_delay_ms(500);
 				for (uint8_t i=0; i<16; i++) {
 					ledmatrix_shift_display_left();
 					_delay_ms(75);
