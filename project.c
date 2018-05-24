@@ -178,6 +178,7 @@ void play_game(void) {
 					_delay_ms(75);
 				}
 				_delay_ms(500);
+				clear_serial_input_buffer();
 				if (frog_live < MAX_LIVE) {
 					frog_live++;
 					update_live();
@@ -345,8 +346,8 @@ void play_game(void) {
 			pause_count_down(1);
 			PCICR &= ~(1<<PCIE1);
 			_delay_ms(2000);
+			clear_serial_input_buffer();
 			PCICR |= (1<<PCIE1);
-			sei();
 			if (frog_live){
 				frog_live--;
 				update_live();
