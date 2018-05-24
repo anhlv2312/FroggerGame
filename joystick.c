@@ -62,31 +62,3 @@ int8_t get_y(void) {
 	}
 	return y;
 }
-
-ISR(ADC_vect) {		
-	value = ADC; // read the value
-	if(x_or_y == 0) {
-		ADMUX &= ~1;
-		} else {
-		ADMUX |= 1;
-	}
-	
-	if (value > (512 + 256)) {
-		if(x_or_y == 0) {
-			joystick = 2;
-			} else {
-			joystick = 0;
-			}
-	} else if (value < (512 - 256)) {
-		if(x_or_y == 0) {
-			joystick = 1;
-		} else {
-			joystick= 3;
-		}
-	} else {
-		joystick = NO_JOYSTICK_MOVED;
-	}
-	x_or_y ^= 1;
-
-	ADCSRA |= (1<<ADSC);
-}
