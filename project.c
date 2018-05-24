@@ -18,7 +18,7 @@
 #include "terminalio.h"
 #include "score.h"
 #include "timer0.h"
-#include "timer1.h"
+#include "timer2.h"
 #include "joystick.h"
 #include "game.h"
 
@@ -77,7 +77,7 @@ void initialise_hardware(void) {
 	init_serial_stdio(19200,0);
 
 	init_timer0();
-	init_timer1();
+	init_timer2();
 	init_joystick();
 	
 	// Set 3 pins of port D to be the out put for lives

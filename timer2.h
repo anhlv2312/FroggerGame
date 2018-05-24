@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-void init_timer1();
+void init_timer2();
 void start_count_down(uint16_t);
 void pause_count_down(uint8_t);
 void stop_count_down();
