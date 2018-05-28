@@ -11,6 +11,6 @@
 
 
 
-
+void init_sound(void);
 
 #endif /* SOUND_H_ */
