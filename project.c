@@ -131,7 +131,7 @@ void new_game(void) {
 	init_score();
 	update_score();
 	
-	play_next_level_sound();
+	play_new_game_sound();
 	
 	frog_live = MAX_LIVE;
 	update_live();
@@ -177,6 +177,7 @@ void play_game(void) {
 			// Frog reached the other side successfully but the
 			// riverbank isn't full, put a new frog at the start;
 			if (is_riverbank_full()) {
+				play_next_level_sound();
 				_delay_ms(500);
 				for (uint8_t i=0; i<16; i++) {
 					ledmatrix_shift_display_left();
@@ -193,7 +194,6 @@ void play_game(void) {
 				update_level();
 			}
 			put_frog_in_start_position();
-			play_next_level_sound();
 			start_count_down(COUNT_DOWN);
 		}
 		

@@ -38,7 +38,7 @@ void init_sound() {
 	
 }
 
-void play_next_level_sound() {
+void play_new_game_sound() {
 	for (uint8_t i=0; i<1; i++) {
 		
 	play_sound(4, 140);
@@ -71,6 +71,22 @@ void play_next_level_sound() {
 
 }
 
+void play_next_level_sound() {
+	for (uint8_t i=0; i<1; i++) {
+	
+		play_sound(4, 140);
+		_delay_ms(50);
+		stop_sound();
+		_delay_ms(50);
+		play_sound(3, 140);
+		_delay_ms(50);
+		stop_sound();
+		_delay_ms(50);
+		play_sound(2, 140);
+		_delay_ms(200);
+	}
+
+}
 
 void play_game_over_sound() {
 	for (uint8_t i=0; i<1; i++) {
