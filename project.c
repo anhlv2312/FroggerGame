@@ -189,8 +189,8 @@ void play_game(void) {
 					frog_live++;
 					update_live();
 				}
-				next_level(game_level);
 				game_level++;
+				next_level(game_level);
 				update_level();
 			}
 			put_frog_in_start_position();
