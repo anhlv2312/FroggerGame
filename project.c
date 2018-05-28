@@ -131,12 +131,12 @@ void new_game(void) {
 	init_score();
 	update_score();
 	
-	play_new_game_sound();
-	
 	frog_live = MAX_LIVE;
 	update_live();
-	game_level = 1;
+	game_level = 0;
 	update_level();
+	
+	play_new_game_sound();
 
 	// Clear a button push or serial input if any are waiting
 	// (The cast to void means the return value is ignored.)
@@ -346,19 +346,39 @@ void play_game(void) {
 			// the vehicles and logs - move them again and keep track of
 			// the time when we did this.
 			if (current_time % (1100 - game_level * SPEED_STEP) == 0) {
-				scroll_vehicle_lane(0, 1);
+				if (game_level % 2) {
+					scroll_vehicle_lane(0, 1);
+				} else {
+					scroll_vehicle_lane(0, -1);
+				}
 			}
 			if (current_time % (1000 - game_level * SPEED_STEP) == 0) {
-				scroll_vehicle_lane(1, -1);
+				if (game_level % 2) {
+					scroll_vehicle_lane(1, -1);
+					} else {
+					scroll_vehicle_lane(1, 1);
+				}
 			}
 			if (current_time % (900 - game_level * SPEED_STEP) == 0) {
-				scroll_vehicle_lane(2, 1);
+				if (game_level % 2) {
+					scroll_vehicle_lane(2, 1);
+					} else {
+					scroll_vehicle_lane(2, -1);
+				}
 			}
 			if (current_time % (1300 - game_level * SPEED_STEP) == 0) {
-				scroll_river_channel(0, -1);
+				if (game_level % 2) {
+					scroll_river_channel(0, 1);
+					} else {
+					scroll_river_channel(0, -1);
+				}
 			}
 			if (current_time % (1200 - game_level * SPEED_STEP) == 0) {
-				scroll_river_channel(1, 1);
+				if (game_level % 2) {
+					scroll_river_channel(1, -1);
+					} else {
+					scroll_river_channel(1, 1);
+				}
 			}
 		}
 
@@ -421,5 +441,5 @@ void update_live() {
 
 void update_level() {
 	move_cursor(50, 12);
-	printf_P(PSTR("Level: %2d"), game_level);
+	printf_P(PSTR("Level: %2d"), game_level + 1);
 }

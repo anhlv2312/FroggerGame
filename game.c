@@ -223,7 +223,7 @@ void set_frog_dead(void) {
 void scroll_vehicle_lane(uint8_t lane, int8_t direction) {
 	uint8_t frog_is_in_this_row = (frog_row == lane + FIRST_VEHICLE_ROW);
 	
-	// Work out the new lane position.
+	// Work out t lane position.
 	// Wrap numbers around if they go out of range
 	// A direction of -1 indicates movement to the left which means we
 	// start from a higher bit position in column 0
@@ -235,13 +235,13 @@ void scroll_vehicle_lane(uint8_t lane, int8_t direction) {
 	}
 	// Update whether the frog will be alive or not. (The frog hasn't moved but
 	// it may have been hit by a vehicle.)
-	frog_dead = will_frog_die_at_position(frog_row, frog_column);
 	
 	// Show the lane on the display
 	redraw_traffic_lane(lane);
 	
 	// If the frog is in this row, show it
 	if(frog_is_in_this_row) {
+		frog_dead = will_frog_die_at_position(frog_row, frog_column);
 		redraw_frog();
 	}
 }
@@ -459,13 +459,4 @@ void next_level(uint8_t level) {
 	riverbank_status = river_bank_data[level % 8];
 	lane_position[0] = lane_position[1] = lane_position[2] = level * 7;
 	log_position[0] = log_position[1] = level * 7;
-	if (level%2) {
-		vehicle_colours[0] = COLOUR_YELLOW;
-		vehicle_colours[1] = COLOUR_RED;
-		vehicle_colours[2] = COLOUR_YELLOW;
-	} else {
-		vehicle_colours[0] = COLOUR_RED;
-		vehicle_colours[1] = COLOUR_YELLOW;
-		vehicle_colours[2] = COLOUR_RED;	
-	}
 }
