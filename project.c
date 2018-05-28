@@ -395,7 +395,7 @@ void handle_game_over() {
 	play_game_over_sound();
 	_delay_ms(500);
 	while(1) {
-		set_scrolling_display_text("GAME OVER", COLOUR_RED);
+		set_scrolling_display_text("GAME OVER", COLOUR_ORANGE);
 		// Scroll the message until it has scrolled off the
 		// display or a button is pushed
 		while(scroll_display()) {
