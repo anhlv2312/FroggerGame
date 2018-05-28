@@ -9,14 +9,12 @@ volatile uint8_t count_down_timing = 0;
 volatile uint8_t timed_out = 0;
 volatile uint16_t count = 0;
 
-#define SEVEN_SEG_CC ((PIND & (1<<7)) >> 7)
-
+uint8_t seven_seg_cc = 0;
 uint8_t seven_seg_data[10] = {63,6,91,79,102,109,125,7,127,111};
 
 void init_timer2() {
 	DDRC = 0xFF;
-	DDRD |= (1<<7);
-
+	DDRD |= (1<<2);
 
 	OCR2A = 124; 
 
@@ -67,26 +65,33 @@ ISR(TIMER2_COMPA_vect) {
 	}
 
 	// Flip the PortD's 7th Pin
-	PORTD ^= (1<<7);
+	if (!seven_seg_cc) {
+		PORTD |= (1<<2);
+	} else {
+		PORTD &= ~(1<<2);
+	}
+	
+	seven_seg_cc = ~seven_seg_cc;
 	
 	if(!timed_out) {
-		if(SEVEN_SEG_CC == 0) {
-			if (count < 1000) {
-				PORTC = seven_seg_data[(count/100)%10];
-			} else {
-				PORTC = seven_seg_data[(count/1000)%10];
-			}
-		} else { 
+		if(seven_seg_cc) {
 			if (count < 1000) {
 				PORTC = seven_seg_data[0] | 0x80;
-			} else if (count < 10000) {
+				} else if (count < 10000) {
 				PORTC = 0;
-			} else {
+				} else {
 				PORTC = seven_seg_data[(count/10000)%10];
+			}
+		
+		} else { 
+			if (count < 1000) {
+				PORTC = seven_seg_data[(count/100)%10];
+				} else {
+				PORTC = seven_seg_data[(count/1000)%10];
 			}
 		}	
 	} else {
-		if(SEVEN_SEG_CC == 0) {
+		if(seven_seg_cc == 0) {
 			PORTC = seven_seg_data[0];
 		} else {
 			PORTC = seven_seg_data[0] | 0x80;

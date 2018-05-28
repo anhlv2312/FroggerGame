@@ -81,7 +81,7 @@ void initialise_hardware(void) {
 	init_joystick();
 	
 	// Set 3 pins of port D to be the out put for lives
-	DDRD |= (1<<DDRD2) | (1<<DDRD3) | (1<<DDRD4);
+	DDRA |= 0b111;
 	
 	// Set 8 pin of port C to be the out put for 7 segs display
 	DDRC = 0xFF;
@@ -379,8 +379,8 @@ void update_score() {
 void update_live() {
 	move_cursor(30, 12);
 	printf_P(PSTR("Live: %2d"), frog_live);
-	PORTD &= ~(0b11100);
-	PORTD |= (live_led_data[frog_live]<<2);
+	PORTA &= ~(0b111);
+	PORTA |= (live_led_data[frog_live]);
 }
 
 void update_level() {
