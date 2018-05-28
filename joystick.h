@@ -9,6 +9,8 @@
 #ifndef JOYSTICK_H_
 #define JOYSTICK_H_
 
+#define NO_JOYSTICK_MOVED (-1)
+
 void init_joystick (void);
 int8_t get_x(void);
 int8_t get_y(void);

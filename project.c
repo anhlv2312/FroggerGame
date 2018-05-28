@@ -18,7 +18,7 @@
 #include "terminalio.h"
 #include "score.h"
 #include "timer0.h"
-#include "timer2.h"
+#include "timer1.h"
 #include "joystick.h"
 #include "game.h"
 
@@ -77,7 +77,7 @@ void initialise_hardware(void) {
 	init_serial_stdio(19200,0);
 
 	init_timer0();
-	init_timer2();
+	init_timer1();
 	init_joystick();
 	
 	// Set 3 pins of port D to be the out put for lives
@@ -343,14 +343,14 @@ void play_game(void) {
 		}
 	
 		if (is_frog_dead()){
+			frog_live--;
+			update_live();
 			pause_count_down(1);
 			PCICR &= ~(1<<PCIE1);
 			_delay_ms(2000);
 			clear_serial_input_buffer();
 			PCICR |= (1<<PCIE1);
 			if (frog_live){
-				frog_live--;
-				update_live();
 				put_frog_in_start_position();
 				start_count_down(COUNT_DOWN);
 			}

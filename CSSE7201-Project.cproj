@@ -149,13 +149,7 @@
     <Compile Include="joystick.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="sound.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sound.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="timer2.c">
+    <Compile Include="timer1.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="game.c">
@@ -212,7 +206,7 @@
     <Compile Include="timer0.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="timer2.h">
+    <Compile Include="timer1.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
