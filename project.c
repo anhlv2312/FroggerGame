@@ -79,8 +79,7 @@ void initialise_hardware(void) {
 
 	init_timer0();
 	init_count_down();
-	
-	//init_sound();
+	init_sound();
 	
 	init_joystick();
 	
@@ -131,6 +130,8 @@ void new_game(void) {
 	// Initialise the score
 	init_score();
 	update_score();
+	
+	play_next_level_sound();
 	
 	frog_live = MAX_LIVE;
 	update_live();
@@ -192,6 +193,7 @@ void play_game(void) {
 				update_level();
 			}
 			put_frog_in_start_position();
+			play_next_level_sound();
 			start_count_down(COUNT_DOWN);
 		}
 		
@@ -242,19 +244,29 @@ void play_game(void) {
 		// Process the input. 
 		if( button==3 || escape_sequence_char=='D' || serial_input=='L' || serial_input=='l') {
 			// Attempt to move left
-			if (!paused) {move_frog_to_left();}
+			if (!paused) {
+				move_frog_to_left(); 
+				play_click_sound();
+			}
 		} else if(button==2 || escape_sequence_char=='A' || serial_input=='U' || serial_input=='u') {
 			// Attempt to move forward
 			if (!paused) {
 				move_frog_forward();
+				play_click_sound();
 				update_score();
-				}
+			}
 		} else if(button==1 || escape_sequence_char=='B' || serial_input=='D' || serial_input=='d') {
 			// Attempt to move down
-			if (!paused) {move_frog_backward();}
+			if (!paused) {
+				move_frog_backward();
+				play_click_sound();
+			}
 		} else if(button==0 || escape_sequence_char=='C' || serial_input=='R' || serial_input=='r') {
 			// Attempt to move right
-			if (!paused) {move_frog_to_right();}
+			if (!paused) {
+				move_frog_to_right();
+				play_click_sound();
+			}
 		} else if(serial_input == 'p' || serial_input == 'P') {
 			paused = 1 ^ paused;
 			pause_count_down(paused);
@@ -273,15 +285,19 @@ void play_game(void) {
 			if (hold_time > 500 && hold_time % 200 ==0 ) {
 				if (BUTTON_LEFT && (holding_button == 0 || holding_button == 1)) {
 					move_frog_to_left();
+					play_click_sound();
 					holding_button = 1;
 				} else if (BUTTON_RIGHT && (holding_button == 0 || holding_button == 2)) {
 					move_frog_to_right();
+					play_click_sound();
 					holding_button = 2;
 				} else if (BUTTON_UP && (holding_button == 0 || holding_button == 3)) {
 					move_frog_forward();
+					play_click_sound();
 					holding_button = 3;
 				} else if (BUTTON_DOWN && (holding_button == 0 || holding_button == 4)) {
 					move_frog_backward();
+					play_click_sound();
 					holding_button = 4;
 				}
 			}
@@ -299,18 +315,22 @@ void play_game(void) {
 			if ((holding_x == 0) || (hold_time > 500 && hold_time %200 ==0)){
 				if (joystick_x == 1) {
 					move_frog_forward();
+					play_click_sound();
 					holding_x =1;
 				} else if (joystick_x == -1) {
 					move_frog_backward();
+					play_click_sound();
 					holding_x =1;
 				}
 			}
 			if ((holding_y == 0) || (hold_time > 500 && hold_time %200 ==0)){
 				if (joystick_y == 1) {
 					move_frog_to_right();
+					play_click_sound();
 					holding_y = 1;
 				} else if (joystick_y == -1) {
 					move_frog_to_left();
+					play_click_sound();
 					holding_y = 1;
 				}
 			}
@@ -347,6 +367,7 @@ void play_game(void) {
 		}
 	
 		if (is_frog_dead()){
+			play_frog_die_sound();
 			frog_live--;
 			update_live();
 			pause_count_down(1);
@@ -357,7 +378,7 @@ void play_game(void) {
 			if (frog_live){
 				put_frog_in_start_position();
 				start_count_down(COUNT_DOWN);
-			}
+			} 
 		}
 	}
 	
@@ -366,12 +387,23 @@ void play_game(void) {
 }
 
 void handle_game_over() {
+	stop_count_down();
 	move_cursor(10,14);
 	printf_P(PSTR("GAME OVER"));
 	move_cursor(10,15);
 	printf_P(PSTR("Press a button to start again"));
-	while(button_pushed() == NO_BUTTON_PUSHED) {
-		; // wait
+	play_game_over_sound();
+	_delay_ms(500);
+	while(1) {
+		set_scrolling_display_text("GAME OVER", COLOUR_RED);
+		// Scroll the message until it has scrolled off the
+		// display or a button is pushed
+		while(scroll_display()) {
+			_delay_ms(150);
+			if(button_pushed() != NO_BUTTON_PUSHED) {
+				return;
+			}
+		}
 	}
 }
 
