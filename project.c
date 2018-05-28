@@ -278,7 +278,7 @@ void play_game(void) {
 		
 		current_time = get_current_time();
 		
-		if (BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) {
+		if ((BUTTON_UP | BUTTON_DOWN | BUTTON_LEFT | BUTTON_RIGHT) && !paused) {
 			PCICR &= ~(1<<PCIE1);
 			if (button_press_time == 0) {button_press_time = get_current_time();}
 			hold_time = current_time - button_press_time;
@@ -309,7 +309,7 @@ void play_game(void) {
 		joystick_x = get_x();
 		joystick_y = get_y();
 		
-		if (joystick_x || joystick_y) {
+		if ((joystick_x | joystick_y) && !paused) {
 			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
 			hold_time = current_time - joystick_press_time;
 			if ((holding_x == 0) || (hold_time > 500 && hold_time %200 ==0)){
