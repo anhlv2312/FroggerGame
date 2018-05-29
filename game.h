@@ -52,6 +52,12 @@ void move_frog_to_left(void);
 // into the river. Attempts to jump off the game field result in the frog dying. 
 void move_frog_to_right(void);
 
+void move_frog_forward_left(void);
+void move_frog_forward_right(void);
+void move_frog_backward_left(void);
+void move_frog_backward_right(void);
+
+
 /////////////////////// FROG / GAME STATUS ///////////////////////////////////
 // Return the position of the frog. The row ranges from 0 (bottom) to 7 (top).
 // The column ranges from 0 (left hand side) to 1 (right hand side)

@@ -194,6 +194,77 @@ void move_frog_to_right(void) {
 	redraw_frog();
 }
 
+
+void move_frog_forward_left(void) {
+	// Unimplemented
+	redraw_row(frog_row);
+	frog_dead = will_frog_die_at_position(frog_row+1, frog_column-1);
+	
+	if (frog_column != 0) {
+		frog_column--;
+	}
+	
+	frog_row++;
+	redraw_frog();
+	
+	if (!frog_dead) {
+		add_to_score(1);
+	}
+
+	// If the frog has ended up successfully in row 7 - add it to the riverbank_status flag
+	if(!frog_dead && frog_row == RIVERBANK_ROW) {
+		riverbank_status |= (1<<frog_column);
+		add_to_score(10);
+	}
+	
+}
+void move_frog_forward_right(void) {
+	// Unimplemented
+	redraw_row(frog_row);
+	frog_dead = will_frog_die_at_position(frog_row+1, frog_column+1);
+	
+	if (frog_column != 15) {
+		frog_column++;
+	}
+	
+	frog_row++;
+	redraw_frog();
+	
+	if (!frog_dead) {
+		add_to_score(1);
+	}
+
+	// If the frog has ended up successfully in row 7 - add it to the riverbank_status flag
+	if(!frog_dead && frog_row == RIVERBANK_ROW) {
+		riverbank_status |= (1<<frog_column);
+		add_to_score(10);
+	}
+}
+void move_frog_backward_left(void) {
+	// Unimplemented
+	redraw_row(frog_row);
+	frog_dead = will_frog_die_at_position(frog_row-1, frog_column-1);
+	if (frog_row != START_ROW) {
+		frog_row--;
+	}
+	if (frog_column != 0) {
+		frog_column--;
+	}
+	redraw_frog();
+}
+void move_frog_backward_right(void) {
+	// Unimplemented
+	redraw_row(frog_row);
+	frog_dead = will_frog_die_at_position(frog_row-1, frog_column+1);
+	if (frog_row != START_ROW) {
+		frog_row--;
+	}
+	if (frog_column != 15) {
+		frog_column++;
+	}
+	redraw_frog();
+}
+
 uint8_t get_frog_row(void) {
 	return frog_row;
 }

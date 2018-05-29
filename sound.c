@@ -109,11 +109,30 @@ void play_game_over_sound() {
 }
 
 
+void play_sound2(uint16_t freq, uint16_t length) {
+	
+	uint16_t clockperiod = 8000000L/(1024L*freq);
+	
+	OCR2A = clockperiod;
+	if ((PINA & (1<<3)) >>3) {
+		OCR2B = clockperiod/2;
+		} else {
+		OCR2B = 1;
+	}
+	
+
+	sound_max_count = length*freq/1000L;
+	// Set the count compare value based on the pulse width. The value will be 1 less
+	// than the pulse width - unless the pulse width is 0.
+
+	start_sound();
+}
+
 void play_sound(uint16_t ocr, uint16_t count) {
 	OCR2A = ocr;
 	if ((PINA & (1<<3)) >>3) {
 		OCR2B = ocr/2;
-		} else {
+	} else {
 		OCR2B = 1;
 	}
 
@@ -126,6 +145,7 @@ void play_sound(uint16_t ocr, uint16_t count) {
 
 void play_click_sound() {
 	play_sound(20, 20);
+	//play_sound2(20, 4000);
 }
 
 void play_frog_die_sound() {
