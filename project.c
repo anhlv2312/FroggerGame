@@ -147,7 +147,7 @@ void new_game(void) {
 void play_game(void) {
 	uint32_t current_time;
 	uint32_t button_press_time, joystick_press_time, hold_time;
-	uint8_t holding_button, holding_x, holding_y;
+	uint8_t holding_button, holding_joystick, holding_x, holding_y;
 	int8_t button;
 	int8_t paused;
 	int8_t joystick_x, joystick_y;
@@ -309,35 +309,47 @@ void play_game(void) {
 		joystick_x = get_x();
 		joystick_y = get_y();
 		
+		
 		if ((joystick_x | joystick_y) && !paused) {
 			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
 			hold_time = current_time - joystick_press_time;
-			if ((holding_x == 0) || (hold_time > 500 && hold_time %200 ==0)){
-				if (joystick_x == 1) {
-					move_frog_forward();
-					play_click_sound();
-					holding_x =1;
-				} else if (joystick_x == -1) {
-					move_frog_backward();
-					play_click_sound();
-					holding_x =1;
-				}
-			}
-			if ((holding_y == 0) || (hold_time > 500 && hold_time %200 ==0)){
+			if ((holding_joystick == 0) || (hold_time > 500 && hold_time %200 ==0)){
 				if (joystick_y == 1) {
-					move_frog_to_right();
+					if (joystick_x == 1) {
+						move_frog_forward_right();
+					} else if (joystick_x == -1) {
+						move_frog_forward_left();
+					} else {
+						move_frog_forward();
+					}
 					play_click_sound();
-					holding_y = 1;
+					holding_joystick =1;
 				} else if (joystick_y == -1) {
-					move_frog_to_left();
+					if (joystick_x == 1) {
+						move_frog_backward_right();
+					} else if (joystick_x == -1) {
+						move_frog_backward_left();
+					} else {
+						move_frog_backward();
+					}
 					play_click_sound();
-					holding_y = 1;
+					holding_joystick =1;
+				} else {
+					if (joystick_x == 1) {
+						move_frog_to_right();
+						play_click_sound();
+						holding_joystick = 1;
+					} else if (joystick_x == -1) {
+						move_frog_to_left();
+						play_click_sound();
+						holding_joystick = 1;
+					}	
 				}
+
 			}
 		} else {
 			joystick_press_time = 0;
-			holding_x = 0;
-			holding_y =0;
+			holding_joystick = 0;
 		}
 
 		

@@ -35,7 +35,7 @@ void init_joystick(void) {
 
 int8_t get_x(void) {
 	int8_t x = 0;
-	ADMUX |= 1;
+	ADMUX &= ~1;
 	ADCSRA |= (1<<ADSC);
 	while(ADCSRA & (1<<ADSC)) {
 		; /* Wait until conversion finished */
@@ -50,7 +50,7 @@ int8_t get_x(void) {
 
 int8_t get_y(void) {
 	int8_t y = 0;
-	ADMUX &= ~1;
+	ADMUX |= 1;
 	ADCSRA |= (1<<ADSC);
 	while(ADCSRA & (1<<ADSC)) {
 		; /* Wait until conversion finished */
