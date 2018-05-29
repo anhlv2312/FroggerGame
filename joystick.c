@@ -40,9 +40,9 @@ int8_t get_x(void) {
 	while(ADCSRA & (1<<ADSC)) {
 		; /* Wait until conversion finished */
 	}
-	if (ADC > (512 + 256)) {
+	if (ADC > (512 + 64)) {
 		x = 1;
-	} else if (ADC < (512 - 256)) {
+	} else if (ADC < (512 - 64)) {
 		x = -1;
 	}
 	return x;
@@ -55,9 +55,9 @@ int8_t get_y(void) {
 	while(ADCSRA & (1<<ADSC)) {
 		; /* Wait until conversion finished */
 	}
-	if (ADC > (512 + 256)) {
+	if (ADC > (512 + 64)) {
 		y = 1;
-	} else if (ADC < (512 - 256)) {
+	} else if (ADC < (512 - 64)) {
 		y = -1;
 	}
 	return y;

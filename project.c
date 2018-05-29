@@ -313,39 +313,31 @@ void play_game(void) {
 		if ((joystick_x | joystick_y) && !paused) {
 			if (joystick_press_time== 0) {joystick_press_time = get_current_time();}
 			hold_time = current_time - joystick_press_time;
-			if ((holding_joystick == 0) || (hold_time > 500 && hold_time %200 ==0)){
-				if (joystick_y == 1) {
-					if (joystick_x == 1) {
-						move_frog_forward_right();
-					} else if (joystick_x == -1) {
-						move_frog_forward_left();
-					} else {
-						move_frog_forward();
-					}
-					play_click_sound();
-					holding_joystick =1;
+			if ((holding_joystick == 0 && hold_time>50) || (hold_time > 500 && hold_time %200 ==0)){
+				if (joystick_y == 1 && joystick_x == 1) {
+					move_frog_forward_right();
+					holding_joystick = 1;
+				} else if (joystick_y == 1 && joystick_x == -1) {
+				move_frog_forward_left();
+				holding_joystick = 1;
+				} else if (joystick_y == -1 && joystick_x == 1) {
+				move_frog_backward_right();
+				holding_joystick = 1;
+				} else if (joystick_y == -1 && joystick_x == -1) {
+				move_frog_backward_left();
+				holding_joystick = 1;
+				} else if (joystick_x == 1) {
+					move_frog_to_right();
+					holding_joystick = 1;
+				} else if (joystick_x == -1) {
+				move_frog_to_left();
+				holding_joystick = 1;
+				} else if (joystick_y == 1) {
+				move_frog_forward();
+				holding_joystick = 1;
 				} else if (joystick_y == -1) {
-					if (joystick_x == 1) {
-						move_frog_backward_right();
-					} else if (joystick_x == -1) {
-						move_frog_backward_left();
-					} else {
-						move_frog_backward();
-					}
-					play_click_sound();
-					holding_joystick =1;
-				} else {
-					if (joystick_x == 1) {
-						move_frog_to_right();
-						play_click_sound();
-						holding_joystick = 1;
-					} else if (joystick_x == -1) {
-						move_frog_to_left();
-						play_click_sound();
-						holding_joystick = 1;
-					}	
-				}
-
+				move_frog_backward();
+				holding_joystick = 1;			}
 			}
 		} else {
 			joystick_press_time = 0;
