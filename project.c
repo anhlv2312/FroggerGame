@@ -147,7 +147,7 @@ void new_game(void) {
 void play_game(void) {
 	uint32_t current_time;
 	uint32_t button_press_time, joystick_press_time, hold_time;
-	uint8_t holding_button, holding_joystick, holding_x, holding_y;
+	uint8_t holding_button, holding_joystick;
 	int8_t button;
 	int8_t paused;
 	int8_t joystick_x, joystick_y;
@@ -164,8 +164,8 @@ void play_game(void) {
 	joystick_press_time =0;
 	hold_time = 0;
 	holding_button = 0;
-	holding_x =0;
-	holding_y =0;
+	holding_joystick =0;
+
 	
 	// We play the game while the frog is alive and we haven't filled up the 
 	// far riverbank
